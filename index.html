@@ -45,20 +45,26 @@
                 <i class="fa-solid fa-tractor"></i>
             </div>
             <h2 class="text-2xl font-bold text-emerald-900 mb-2">実習の出荷・販売を記録</h2>
-            <p class="text-slate-600 text-sm mb-6">Googleアカウントでログインして、収穫した農産物の記録を開始しましょう。</p>
+            <p class="text-slate-600 text-sm mb-6">Googleアカウントまたはゲストログインで、収穫した農産物の記録を開始しましょう。</p>
             
-            <button id="loginBtn" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-semibold py-3 px-4 border border-slate-300 rounded-xl shadow-sm hover:shadow transition-all flex items-center justify-center gap-3">
-                <svg class="w-5 h-5" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                </svg>
-                Googleアカウントでログイン
-            </button>
+            <div class="space-y-3">
+                <button id="loginBtn" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-semibold py-3 px-4 border border-slate-300 rounded-xl shadow-sm hover:shadow transition-all flex items-center justify-center gap-3">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    Googleアカウントでログイン
+                </button>
+
+                <button id="anonLoginBtn" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold py-2.5 px-4 rounded-xl border border-emerald-200 transition-all flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-user-clock"></i> ゲスト(匿名)として試用ログイン
+                </button>
+            </div>
 
             <!-- エラー表示エリア -->
-            <div id="loginError" class="hidden mt-4 p-3 bg-red-50 text-red-600 text-xs rounded-lg text-left"></div>
+            <div id="loginError" class="hidden mt-4 p-3 bg-red-50 text-red-600 text-xs rounded-lg text-left leading-relaxed"></div>
         </div>
 
         <!-- ログイン後メインコンテンツ -->
@@ -228,6 +234,7 @@
         import { 
             getAuth, 
             signInWithPopup, 
+            signInAnonymously,
             GoogleAuthProvider, 
             signOut, 
             onAuthStateChanged 
@@ -276,30 +283,9 @@
         const userName = document.getElementById('userName');
         const userAvatar = document.getElementById('userAvatar');
         const loginBtn = document.getElementById('loginBtn');
+        const anonLoginBtn = document.getElementById('anonLoginBtn');
         const logoutBtn = document.getElementById('logoutBtn');
         const loginError = document.getElementById('loginError');
-
-        const shipmentForm = document.getElementById('shipmentForm');
-        const formTitle = document.getElementById('formTitle');
-        const editDocId = document.getElementById('editDocId');
-        const itemName = document.getElementById('itemName');
-        const shipDate = document.getElementById('shipDate');
-        const quantity = document.getElementById('quantity');
-        const unit = document.getElementById('unit');
-        const destination = document.getElementById('destination');
-        const memo = document.getElementById('memo');
-        const submitBtnText = document.getElementById('submitBtnText');
-        const cancelEditBtn = document.getElementById('cancelEditBtn');
-        const formError = document.getElementById('formError');
-
-        const shipmentList = document.getElementById('shipmentList');
-        const filterCrop = document.getElementById('filterCrop');
-        const sortOrder = document.getElementById('sortOrder');
-        const summaryList = document.getElementById('summaryList');
-
-        const customModal = document.getElementById('customModal');
-        const modalCancelBtn = document.getElementById('modalCancelBtn');
-        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
 
         // デフォルト日付を本日に設定
         shipDate.valueAsDate = new Date();
@@ -308,14 +294,14 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                userName.textContent = user.displayName || 'ユーザー';
+                userName.textContent = user.displayName || (user.isAnonymous ? 'ゲスト生徒' : 'ユーザー');
                 userAvatar.src = user.photoURL || 'https://placehold.co/100x100/10b981/ffffff?text=User';
                 
                 loginSection.classList.add('hidden');
                 userInfo.classList.remove('hidden');
                 appSection.classList.remove('hidden');
 
-                // データのリアルタイム監視開始 (RULE 1遵守)
+                // データのリアルタイム監視開始
                 initRealtimeListener();
             } else {
                 currentUser = null;
@@ -333,328 +319,30 @@
                 await signInWithPopup(auth, provider);
             } catch (error) {
                 console.error("Login failed:", error);
-                loginError.textContent = `ログインエラー: ${error.message}`;
+                if (error.code === 'auth/configuration-not-found') {
+                    loginError.innerHTML = `
+                        <strong>Firebase認証未設定エラー:</strong><br>
+                        Firebase Consoleの「Authentication」→「Sign-in method」で <strong>Google ログインプロバイダを有効化</strong> してください。<br>
+                        ※下部の「ゲストとして試用ログイン」ボタンでテスト実行も可能です。
+                    `;
+                } else {
+                    loginError.textContent = `ログインエラー: ${error.message}`;
+                }
+                loginError.classList.remove('hidden');
+            }
+        });
+
+        // 匿名（ゲスト）ログインのフォールバック処理
+        anonLoginBtn.addEventListener('click', async () => {
+            loginError.classList.add('hidden');
+            try {
+                await signInAnonymously(auth);
+            } catch (error) {
+                console.error("Anonymous login failed:", error);
+                loginError.textContent = `ゲストログインエラー: ${error.message}`;
                 loginError.classList.remove('hidden');
             }
         });
 
         // ログアウト
-        logoutBtn.addEventListener('click', async () => {
-            try {
-                await signOut(auth);
-            } catch (error) {
-                console.error("Logout failed:", error);
-            }
-        });
-
-        // Firestore リアルタイム取得 (RULE 1, RULE 2 遵守: JS側でフィルタ・ソート処理)
-        function initRealtimeListener() {
-            if (!currentUser) return;
-
-            // 共有データ用パス (RULE 1)
-            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'shipments');
-
-            onSnapshot(colRef, (snapshot) => {
-                shipments = [];
-                snapshot.forEach((doc) => {
-                    shipments.push({
-                        id: doc.id,
-                        ...doc.data()
-                    });
-                });
-                renderAppUI();
-            }, (error) => {
-                console.error("Firestore Listener Error:", error);
-            });
-        }
-
-        // フォーム登録・更新処理
-        shipmentForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            formError.classList.add('hidden');
-
-            const crop = itemName.value.trim();
-            const dateVal = shipDate.value;
-            const qtyVal = parseFloat(quantity.value);
-            const unitVal = unit.value;
-            const destVal = destination.value;
-            const memoVal = memo.value.trim();
-
-            // バリデーション (入力検証)
-            if (!crop || !dateVal || isNaN(qtyVal) || qtyVal <= 0 || !destVal) {
-                formError.textContent = "必須項目（農産物名、出荷日、正の数値数量、出荷先）を正しく入力してください。";
-                formError.classList.remove('hidden');
-                return;
-            }
-
-            const docData = {
-                cropName: crop,
-                shipmentDate: dateVal,
-                quantity: qtyVal,
-                unit: unitVal,
-                destination: destVal,
-                memo: memoVal,
-                userId: currentUser.uid,
-                userName: currentUser.displayName || '名無し生徒',
-                updatedAt: serverTimestamp()
-            };
-
-            try {
-                const targetId = editDocId.value;
-                if (targetId) {
-                    // 編集更新
-                    const targetDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'shipments', targetId);
-                    await updateDoc(targetDocRef, docData);
-                } else {
-                    // 新規追加
-                    docData.createdAt = serverTimestamp();
-                    const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'shipments');
-                    await addDoc(colRef, docData);
-                }
-                resetForm();
-            } catch (error) {
-                console.error("Save Error:", error);
-                formError.textContent = "データの保存に失敗しました: " + error.message;
-                formError.classList.remove('hidden');
-            }
-        });
-
-        // フォームリセット
-        function resetForm() {
-            shipmentForm.reset();
-            editDocId.value = '';
-            shipDate.valueAsDate = new Date();
-            formTitle.innerHTML = '<i class="fa-solid fa-plus-circle text-emerald-600"></i> 新規出荷登録';
-            submitBtnText.textContent = '登録する';
-            cancelEditBtn.classList.add('hidden');
-            formError.classList.add('hidden');
-        }
-
-        cancelEditBtn.addEventListener('click', resetForm);
-
-        // UI全体の描画更新
-        function renderAppUI() {
-            renderCropFilterOptions();
-            renderList();
-            renderSummary();
-            renderChart();
-        }
-
-        // フィルター用ドロップダウンの構築
-        function renderCropFilterOptions() {
-            const currentFilter = filterCrop.value;
-            const cropSet = new Set(shipments.map(s => s.cropName));
-            
-            filterCrop.innerHTML = '<option value="">すべての農産物</option>';
-            cropSet.forEach(crop => {
-                if (crop) {
-                    const opt = document.createElement('option');
-                    opt.value = crop;
-                    opt.textContent = crop;
-                    filterCrop.appendChild(opt);
-                }
-            });
-            filterCrop.value = currentFilter;
-        }
-
-        // 絞り込み・ソート変更時のイベント
-        filterCrop.addEventListener('change', renderList);
-        sortOrder.addEventListener('change', renderList);
-
-        // 一覧表示
-        function renderList() {
-            const selectedCrop = filterCrop.value;
-            const order = sortOrder.value;
-
-            // JSメモリ上でのフィルタリング & ソート (RULE 2 遵守)
-            let filtered = shipments.filter(s => {
-                if (selectedCrop && s.cropName !== selectedCrop) return false;
-                return true;
-            });
-
-            filtered.sort((a, b) => {
-                const dateA = new Date(a.shipmentDate || 0);
-                const dateB = new Date(b.shipmentDate || 0);
-                return order === 'asc' ? dateA - dateB : dateB - dateA;
-            });
-
-            if (filtered.length === 0) {
-                shipmentList.innerHTML = `
-                    <div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                        <i class="fa-solid fa-box-open text-2xl text-slate-300 mb-2"></i>
-                        <p class="text-sm text-slate-500">該当する出荷記録が見つかりません</p>
-                    </div>`;
-                return;
-            }
-
-            shipmentList.innerHTML = filtered.map(item => `
-                <div class="bg-white border border-slate-100 rounded-xl p-4 shadow-sm hover:shadow transition-shadow flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                    <div class="space-y-1 w-full">
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-0.5 rounded-full">
-                                ${escapeHtml(item.cropName)}
-                            </span>
-                            <span class="bg-slate-100 text-slate-700 text-xs font-medium px-2 py-0.5 rounded-md">
-                                <i class="fa-solid fa-location-dot text-slate-400 mr-1"></i>${escapeHtml(item.destination)}
-                            </span>
-                            <span class="text-xs text-slate-400">
-                                <i class="fa-regular fa-calendar mr-1"></i>${escapeHtml(item.shipmentDate)}
-                            </span>
-                        </div>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <span class="text-2xl font-extrabold text-slate-800">${item.quantity}</span>
-                            <span class="text-sm font-semibold text-slate-600">${escapeHtml(item.unit || 'kg')}</span>
-                        </div>
-                        ${item.memo ? `<p class="text-xs text-slate-500 bg-slate-50 p-2 rounded-lg mt-1"><i class="fa-solid fa-note-sticky text-slate-400 mr-1"></i>${escapeHtml(item.memo)}</p>` : ''}
-                        <div class="text-[10px] text-slate-400 pt-1">
-                            記録者: ${escapeHtml(item.userName || '匿名')}
-                        </div>
-                    </div>
-                    
-                    <!-- 操作ボタン (編集・削除) -->
-                    <div class="flex items-center gap-2 border-t sm:border-t-0 pt-2 sm:pt-0 w-full sm:w-auto justify-end">
-                        <button onclick="window.editShipment('${item.id}')" class="text-xs text-slate-600 hover:text-emerald-600 bg-slate-100 hover:bg-emerald-50 p-2 rounded-lg transition-colors">
-                            <i class="fa-solid fa-pen"></i> 編集
-                        </button>
-                        <button onclick="window.confirmDelete('${item.id}')" class="text-xs text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-colors">
-                            <i class="fa-solid fa-trash"></i> 削除
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // 農産物ごとの合計集計表示 (発展機能)
-        function renderSummary() {
-            const totals = {};
-            shipments.forEach(s => {
-                const key = `${s.cropName} (${s.unit || 'kg'})`;
-                totals[key] = (totals[key] || 0) + (parseFloat(s.quantity) || 0);
-            });
-
-            const keys = Object.keys(totals);
-            if (keys.length === 0) {
-                summaryList.innerHTML = '<p class="text-xs text-slate-400">データがありません</p>';
-                return;
-            }
-
-            summaryList.innerHTML = keys.map(k => `
-                <div class="flex justify-between items-center bg-emerald-50/60 p-2.5 rounded-xl border border-emerald-100/50">
-                    <span class="text-xs font-medium text-emerald-900">${escapeHtml(k)}</span>
-                    <span class="text-sm font-bold text-emerald-700">${totals[k].toLocaleString()}</span>
-                </div>
-            `).join('');
-        }
-
-        // 出荷数量推移グラフ描画 (Chart.js / 発展機能)
-        function renderChart() {
-            const ctx = document.getElementById('shipmentChart').getContext('2d');
-
-            // 日付順にソートして集計
-            const sorted = [...shipments].sort((a, b) => new Date(a.shipmentDate) - new Date(b.shipmentDate));
-            const dateMap = {};
-
-            sorted.forEach(s => {
-                const date = s.shipmentDate;
-                if (!dateMap[date]) dateMap[date] = 0;
-                dateMap[date] += parseFloat(s.quantity) || 0;
-            });
-
-            const labels = Object.keys(dateMap);
-            const dataValues = Object.values(dateMap);
-
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: '日別 総出荷量',
-                        data: dataValues,
-                        borderColor: '#059669',
-                        backgroundColor: 'rgba(5, 150, 105, 0.1)',
-                        fill: true,
-                        tension: 0.3,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#059669'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        x: {
-                            ticks: { font: { size: 10 } }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            ticks: { font: { size: 10 } }
-                        }
-                    }
-                }
-            });
-        }
-
-        // 編集モード呼出
-        window.editShipment = function(id) {
-            const item = shipments.find(s => s.id === id);
-            if (!item) return;
-
-            editDocId.value = item.id;
-            itemName.value = item.cropName || '';
-            shipDate.value = item.shipmentDate || '';
-            quantity.value = item.quantity || '';
-            unit.value = item.unit || 'kg';
-            destination.value = item.destination || '';
-            memo.value = item.memo || '';
-
-            formTitle.innerHTML = '<i class="fa-solid fa-pen-to-square text-emerald-600"></i> 出荷記録の編集';
-            submitBtnText.textContent = '更新する';
-            cancelEditBtn.classList.remove('hidden');
-            
-            // フォームへスクロール
-            shipmentForm.scrollIntoView({ behavior: 'smooth' });
-        };
-
-        // 削除確認モーダル表示
-        window.confirmDelete = function(id) {
-            docToDeleteId = id;
-            customModal.classList.remove('hidden');
-        };
-
-        modalCancelBtn.addEventListener('click', () => {
-            docToDeleteId = null;
-            customModal.classList.add('hidden');
-        });
-
-        modalConfirmBtn.addEventListener('click', async () => {
-            if (!docToDeleteId) return;
-            try {
-                const targetDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'shipments', docToDeleteId);
-                await deleteDoc(targetDocRef);
-                docToDeleteId = null;
-                customModal.classList.add('hidden');
-            } catch (error) {
-                console.error("Delete error:", error);
-            }
-        });
-
-        // XSS防止エスケープ処理
-        function escapeHtml(str) {
-            if (!str) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-    </script>
-</body>
-</html>
+<!-- ... existing code -->
