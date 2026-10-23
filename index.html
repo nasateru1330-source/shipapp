@@ -8,8 +8,8 @@
     <!-- 1. favicon.ico 404 エラー防止 (Inline SVG Favicon) -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
 
-    <!-- 2. Tailwind CSS ビルド済みスタンドアロン版 (cdn.tailwindcss.com の警告ログおよびスクリプト実行を完全排除) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" integrity="sha512-wnea99cKBU3JHve3ptkBlhxpoEFT3m2vbfudK1TXDA7YlbddeNL78XmP8Yp1T6ZO5uVU8ORXQ432bN42e9x=" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- 2. Tailwind CSS ビルド済みスタンドアロンCSS (cdn.tailwindcss.com の JS スクリプトを完全排除して警告を出さない) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     <!-- Custom Styles / Extended Color Utilities -->
     <style>
@@ -36,10 +36,10 @@
         .hover\:bg-emerald-100:hover { background-color: #d1fae5; }
     </style>
 
-    <!-- Chart.js (cdnjs 経由＋referrerpolicy 追加で Tracking Prevention 警告を防止) -->
+    <!-- Chart.js (cdnjs 経由＋referrerpolicy/crossorigin追加で Tracking Prevention 警告を抑止) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- FontAwesome Icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="min-h-screen flex flex-col">
 
