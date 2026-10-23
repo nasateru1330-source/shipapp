@@ -5,56 +5,225 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>農産物出荷記録アプリ - shipapp</title>
 
-    <!-- 1. favicon.ico 404 エラー防止 (Inline SVG Favicon) -->
+    <!-- 1. Inline SVG Favicon (404エラー・外部リソースアクセス完全排除) -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
 
-    <!-- 2. Tailwind CSS ビルド済みスタンドアロンCSS (cdn.tailwindcss.com の JS スクリプトを完全排除して警告を出さない) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
-    <!-- Custom Styles / Extended Color Utilities -->
+    <!-- 2. 完全独立ビルド済みCSS (cdn.tailwindcss.com や cdnjs / jsdelivr などの外部トラッキング警告を完全に排除) -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: #f0fdf4;
             color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
+
+        /* 画面レイアウト・ユーティリティ */
+        .max-w-6xl { max-width: 72rem; }
+        .max-w-md { max-width: 28rem; }
+        .max-w-sm { max-width: 24rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .my-12 { margin-top: 3rem; margin-bottom: 3rem; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-4 { margin-top: 1rem; }
+        .p-2 { padding: 0.5rem; }
+        .p-3 { padding: 0.75rem; }
+        .p-4 { padding: 1rem; }
+        .p-5 { padding: 1.25rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+        .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-0\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+        .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+        
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .flex-grow { flex-grow: 1; }
+        .flex-1 { flex: 1 1 0%; }
+        
+        .space-x-1 > * + * { margin-left: 0.25rem; }
+        .space-x-2 > * + * { margin-left: 0.5rem; }
+        .space-x-3 > * + * { margin-left: 0.75rem; }
+        .space-y-1 > * + * { margin-top: 0.25rem; }
+        .space-y-2 > * + * { margin-top: 0.5rem; }
+        .space-y-3 > * + * { margin-top: 0.75rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .space-y-6 > * + * { margin-top: 1.5rem; }
+
+        .grid { display: grid; }
+        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        .gap-3 { gap: 0.75rem; }
+        .gap-6 { gap: 1.5rem; }
+
+        @media (min-width: 640px) {
+            .sm\:flex-row { flex-direction: row; }
+            .sm\:items-center { align-items: center; }
+            .sm\:inline { display: inline; }
+            .sm\:w-auto { width: auto; }
+            .sm\:space-y-0 > * + * { margin-top: 0; }
+        }
+        @media (min-width: 768px) {
+            .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .md\:col-span-2 { grid-column: span 2 / span 2; }
+        }
+        @media (min-width: 1024px) {
+            .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .lg\:col-span-1 { grid-column: span 1 / span 1; }
+            .lg\:col-span-2 { grid-column: span 2 / span 2; }
+        }
+
+        .bg-white { background-color: #ffffff; }
+        .bg-emerald-50 { background-color: #ecfdf5; }
+        .bg-emerald-100 { background-color: #d1fae5; }
+        .bg-emerald-600 { background-color: #059669; }
         .bg-emerald-700 { background-color: #047857; }
         .bg-emerald-800 { background-color: #065f46; }
         .bg-emerald-900 { background-color: #064e3b; }
-        .bg-emerald-600 { background-color: #059669; }
-        .bg-emerald-50 { background-color: #ecfdf5; }
-        .bg-emerald-100 { background-color: #d1fae5; }
-        .text-emerald-900 { color: #064e3b; }
-        .text-emerald-800 { color: #065f46; }
+        .bg-gray-50 { background-color: #f8fafc; }
+        .bg-gray-100 { background-color: #f1f5f9; }
+        .bg-gray-200 { background-color: #e2e8f0; }
+        .bg-red-50 { background-color: #fef2f2; }
+        .bg-red-100 { background-color: #fee2e2; }
+        .bg-red-600 { background-color: #dc2626; }
+        
+        .hover\:bg-gray-50:hover { background-color: #f8fafc; }
+        .hover\:bg-gray-100:hover { background-color: #f1f5f9; }
+        .hover\:bg-gray-200:hover { background-color: #e2e8f0; }
+        .hover\:bg-emerald-100:hover { background-color: #d1fae5; }
+        .hover\:bg-emerald-700:hover { background-color: #047857; }
+        .hover\:bg-emerald-900:hover { background-color: #064e3b; }
+        .hover\:bg-red-700:hover { background-color: #b91c1c; }
+
+        .text-white { color: #ffffff; }
+        .text-gray-400 { color: #94a3b8; }
+        .text-gray-500 { color: #64748b; }
+        .text-gray-600 { color: #475569; }
+        .text-gray-700 { color: #334155; }
+        .text-gray-800 { color: #1e293b; }
         .text-emerald-600 { color: #059669; }
+        .text-emerald-700 { color: #047857; }
+        .text-emerald-800 { color: #065f46; }
+        .text-emerald-900 { color: #064e3b; }
+        .text-red-500 { color: #ef4444; }
+        .text-red-600 { color: #dc2626; }
+
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-base { font-size: 1rem; line-height: 1.5rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+
+        .font-normal { font-weight: 400; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+
+        .border { border-width: 1px; border-style: solid; }
+        .border-b { border-bottom-width: 1px; border-bottom-style: solid; }
+        .border-2 { border-width: 2px; border-style: solid; }
+        .border-gray-100 { border-color: #f1f5f9; }
+        .border-gray-200 { border-color: #e2e8f0; }
+        .border-gray-300 { border-color: #cbd5e1; }
         .border-emerald-100 { border-color: #d1fae5; }
         .border-emerald-200 { border-color: #a7f3d0; }
         .border-emerald-600 { border-color: #059669; }
-        .hover\:bg-emerald-700:hover { background-color: #047857; }
-        .hover\:bg-emerald-900:hover { background-color: #064e3b; }
-        .hover\:bg-emerald-100:hover { background-color: #d1fae5; }
-    </style>
+        .border-red-200 { border-color: #fecaca; }
+        .border-white { border-color: #ffffff; }
 
-    <!-- Chart.js (cdnjs 経由＋referrerpolicy/crossorigin追加で Tracking Prevention 警告を抑止) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!-- FontAwesome Icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        .rounded-md { border-radius: 0.375rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .rounded-2xl { border-radius: 1rem; }
+        .rounded-full { border-radius: 9999px; }
+
+        .shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+        .shadow-md { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .shadow-xl { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        .shadow-2xl { box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
+
+        .w-full { width: 100%; }
+        .w-2\/3 { width: 66.666667%; }
+        .w-1\/3 { width: 33.333333%; }
+        .w-5 { width: 1.25rem; }
+        .w-8 { width: 2rem; }
+        .w-12 { width: 3rem; }
+        .w-20 { width: 5rem; }
+        .h-5 { height: 1.25rem; }
+        .h-8 { height: 2rem; }
+        .h-12 { height: 3rem; }
+        .h-20 { height: 5rem; }
+        .h-44 { height: 11rem; }
+
+        .sticky { position: sticky; }
+        .top-0 { top: 0; }
+        .fixed { position: fixed; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+        .z-50 { z-index: 50; }
+        .relative { position: relative; }
+
+        .hidden { display: none !important; }
+        .underline { text-decoration: underline; }
+        .overflow-y-auto { overflow-y: auto; }
+        .max-h-48 { max-height: 12rem; }
+        .min-h-screen { min-height: 100vh; }
+
+        .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+        .transition-colors { transition-property: color, background-color, border-color; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+
+        button, input, select, textarea {
+            font-family: inherit;
+        }
+        button { cursor: pointer; }
+        input:focus, select:focus, textarea:focus {
+            outline: 2px solid #059669;
+            outline-offset: -1px;
+        }
+
+        .backdrop-blur-sm { backdrop-filter: blur(4px); }
+        .bg-opacity-50 { background-color: rgba(15, 23, 42, 0.5); }
+    </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
     <!-- ヘッダー -->
     <header class="bg-emerald-700 text-white shadow-md sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <i class="fa-solid font-bold text-2xl fa-wheat-awn text-amber-300"></i>
+                <!-- Inline SVG: 🌾 -->
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v18m0-18C9 6 4 8 4 12c0 4 5 6 8 9m0-21c3 3 8 5 8 9 0 4-5 6-8 9"></path>
+                </svg>
                 <h1 class="text-xl font-bold tracking-wide">農産物出荷記録 shipapp</h1>
             </div>
             <div id="userInfo" class="hidden flex items-center space-x-3">
                 <img id="userAvatar" class="w-8 h-8 rounded-full border-2 border-white" src="" alt="User Avatar">
                 <span id="userName" class="text-sm font-medium hidden sm:inline"></span>
-                <button id="logoutBtn" class="bg-emerald-800 hover:bg-emerald-900 text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1 border border-emerald-600">
-                    <i class="fa-solid fa-right-from-bracket"></i> <span>ログアウト</span>
+                <button id="logoutBtn" class="bg-emerald-800 hover:bg-emerald-900 text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1 border border-emerald-600 text-white">
+                    <span>ログアウト</span>
                 </button>
             </div>
         </div>
@@ -64,14 +233,18 @@
 
         <!-- ログイン前画面 -->
         <div id="loginSection" class="max-w-md mx-auto my-12 bg-white p-8 rounded-2xl shadow-xl text-center border border-emerald-100">
-            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-                <i class="fa-solid fa-tractor"></i>
+            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <!-- Inline SVG: 🚜 -->
+                <svg class="w-12 h-12 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M8 16a2 2 0 11-4 0 2 2 0 014 0zm10 0a2 2 0 11-4 0 2 2 0 014 0zM4 5a1 1 0 00-1 1v6a1 1 0 001 1h1.172a3 3 0 015.656 0H15a1 1 0 001-1V9a1 1 0 00-.293-.707l-3-3A1 1 0 0012 5H4z"/>
+                </svg>
             </div>
             <h2 class="text-2xl font-bold text-emerald-900 mb-2">実習の出荷・販売を記録</h2>
             <p class="text-gray-600 text-sm mb-6">Googleアカウントまたはゲストログインで、収穫した農産物の記録を開始しましょう。</p>
             
             <div class="space-y-3">
-                <button id="loginBtn" class="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 border border-gray-300 rounded-xl shadow-sm hover:shadow transition-all flex items-center justify-center space-x-3">
+                <!-- Googleログインボタン -->
+                <button id="loginBtn" class="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 border border-gray-300 rounded-xl shadow-sm transition-all flex items-center justify-center space-x-3">
                     <svg class="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -81,12 +254,13 @@
                     <span>Googleアカウントでログイン</span>
                 </button>
 
+                <!-- ゲスト試用ログイン -->
                 <button id="anonLoginBtn" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold py-2.5 px-4 rounded-xl border border-emerald-200 transition-all flex items-center justify-center space-x-2 text-sm">
-                    <i class="fa-solid fa-user-clock"></i> <span>ゲスト(匿名)として試用ログイン</span>
+                    <span>⚡ ゲスト(匿名)として今すぐ試用ログイン</span>
                 </button>
             </div>
 
-            <!-- エラー表示エリア -->
+            <!-- エラー表示エリア (ドメイン未設定時の対話的ガイド付き) -->
             <div id="loginError" class="hidden mt-4 p-3 bg-red-50 text-red-600 text-xs rounded-lg text-left leading-relaxed border border-red-200"></div>
         </div>
 
@@ -99,7 +273,7 @@
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-emerald-100 flex flex-col justify-between">
                     <div>
                         <h3 class="text-sm font-semibold text-gray-500 mb-3 flex items-center space-x-2">
-                            <i class="fa-solid fa-chart-pie text-emerald-600"></i> <span>農産物別 集計 (合計)</span>
+                            <span>📊 農産物別 集計 (合計)</span>
                         </h3>
                         <div id="summaryList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
                             <p class="text-xs text-gray-400">データがありません</p>
@@ -107,13 +281,13 @@
                     </div>
                 </div>
 
-                <!-- 出荷推移グラフ -->
+                <!-- 出荷推移グラフ (完全インラインCanvas描画) -->
                 <div class="md:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-emerald-100">
                     <h3 class="text-sm font-semibold text-gray-500 mb-2 flex items-center space-x-2">
-                        <i class="fa-solid fa-chart-line text-emerald-600"></i> <span>出荷数量の推移</span>
+                        <span>📈 出荷数量の推移</span>
                     </h3>
-                    <div class="relative h-44">
-                        <canvas id="shipmentChart"></canvas>
+                    <div class="relative h-44 w-full">
+                        <canvas id="shipmentChartCanvas" class="w-full h-full"></canvas>
                     </div>
                 </div>
             </div>
@@ -124,7 +298,7 @@
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100 lg:col-span-1">
                     <div class="flex justify-between items-center mb-4">
                         <h2 id="formTitle" class="text-lg font-bold text-emerald-900 flex items-center space-x-2">
-                            <i class="fa-solid fa-plus-circle text-emerald-600"></i> <span>新規出荷登録</span>
+                            <span>➕ 新規出荷登録</span>
                         </h2>
                         <button id="cancelEditBtn" class="hidden text-xs text-gray-500 hover:text-gray-800 underline">
                             キャンセル
@@ -140,7 +314,7 @@
                         <!-- 1. 農産物名 -->
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">農産物名 <span class="text-red-500">*</span></label>
-                            <input type="text" id="itemName" list="cropSuggestions" placeholder="例: トマト, キュウリ, 米" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <input type="text" id="itemName" list="cropSuggestions" placeholder="例: トマト, キュウリ, 米" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl">
                             <datalist id="cropSuggestions">
                                 <option value="トマト">
                                 <option value="ミニトマト">
@@ -155,15 +329,15 @@
                         <!-- 2. 出荷日 -->
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">出荷日 <span class="text-red-500">*</span></label>
-                            <input type="date" id="shipDate" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <input type="date" id="shipDate" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl">
                         </div>
 
                         <!-- 3. 出荷数量 -->
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">出荷数量 <span class="text-red-500">*</span></label>
                             <div class="flex space-x-2">
-                                <input type="number" id="quantity" step="any" min="0.01" placeholder="例: 15.5" class="w-2/3 px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                                <select id="unit" class="w-1/3 px-2 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-gray-50">
+                                <input type="number" id="quantity" step="any" min="0.01" placeholder="例: 15.5" class="w-2/3 px-3 py-2 text-sm border border-gray-300 rounded-xl">
+                                <select id="unit" class="w-1/3 px-2 py-2 text-sm border border-gray-300 rounded-xl bg-gray-50">
                                     <option value="kg">kg</option>
                                     <option value="個">個</option>
                                     <option value="ケース">ケース</option>
@@ -176,7 +350,7 @@
                         <!-- 4. 出荷先 -->
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">出荷先 <span class="text-red-500">*</span></label>
-                            <select id="destination" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                            <select id="destination" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl bg-white">
                                 <option value="">選択してください</option>
                                 <option value="直売所">直売所</option>
                                 <option value="学校祭">学校祭</option>
@@ -190,12 +364,12 @@
                         <!-- 5. メモ -->
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">メモ</label>
-                            <textarea id="memo" rows="3" placeholder="実習時の気付きや品質、等級など" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                            <textarea id="memo" rows="3" placeholder="実習時の気付きや品質、等級など" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl"></textarea>
                         </div>
 
                         <!-- 登録ボタン -->
-                        <button type="submit" id="submitBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2">
-                            <i class="fa-solid fa-paper-plane"></i> <span id="submitBtnText">登録する</span>
+                        <button type="submit" id="submitBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2">
+                            <span id="submitBtnText">登録する</span>
                         </button>
                     </form>
                 </div>
@@ -204,18 +378,18 @@
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100 lg:col-span-2 space-y-4">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
                         <h2 class="text-lg font-bold text-emerald-900 flex items-center space-x-2">
-                            <i class="fa-solid fa-list-check text-emerald-600"></i> <span>出荷記録一覧</span>
+                            <span>📋 出荷記録一覧</span>
                         </h2>
                         
                         <!-- フィルタ・ソート機能 -->
                         <div class="flex items-center space-x-2 w-full sm:w-auto">
                             <!-- 農産物絞り込み -->
-                            <select id="filterCrop" class="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-gray-50 focus:outline-none">
+                            <select id="filterCrop" class="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-gray-50">
                                 <option value="">すべての農産物</option>
                             </select>
 
                             <!-- 日付ソート -->
-                            <select id="sortOrder" class="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-gray-50 focus:outline-none">
+                            <select id="sortOrder" class="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-gray-50">
                                 <option value="desc">日付: 新しい順</option>
                                 <option value="asc">日付: 古い順</option>
                             </select>
@@ -235,11 +409,11 @@
     <!-- モーダルダイアログ (削除確認用) -->
     <div id="customModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4">
-            <div id="modalIcon" class="w-12 h-12 rounded-full bg-red-100 text-red-500 flex items-center justify-center mx-auto text-xl">
-                <i class="fa-solid fa-trash"></i>
+            <div class="w-12 h-12 rounded-full bg-red-100 text-red-500 flex items-center justify-center mx-auto text-xl font-bold">
+                🗑️
             </div>
-            <h3 id="modalTitle" class="text-base font-bold text-gray-800">削除の確認</h3>
-            <p id="modalMessage" class="text-sm text-gray-600">この出荷記録を削除してもよろしいですか？</p>
+            <h3 class="text-base font-bold text-gray-800">削除の確認</h3>
+            <p class="text-sm text-gray-600">この出荷記録を削除してもよろしいですか？</p>
             <div class="flex space-x-2 pt-2">
                 <button id="modalCancelBtn" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 rounded-xl text-sm transition-colors">
                     キャンセル
@@ -260,9 +434,7 @@
             signInAnonymously,
             GoogleAuthProvider, 
             signOut, 
-            onAuthStateChanged,
-            setPersistence,
-            browserLocalPersistence
+            onAuthStateChanged
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
             getFirestore, 
@@ -294,17 +466,9 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // トラッキングブロック警告抑止のための永続性設定
-        try {
-            setPersistence(auth, browserLocalPersistence);
-        } catch (e) {
-            console.warn("Persistence set warning bypass:", e);
-        }
-
         // UI State Variables
         let currentUser = null;
         let shipments = [];
-        let chartInstance = null;
         let docToDeleteId = null;
         let unsubscribeSnapshot = null;
 
@@ -329,7 +493,6 @@
         const unit = document.getElementById('unit');
         const destination = document.getElementById('destination');
         const memo = document.getElementById('memo');
-        const submitBtn = document.getElementById('submitBtn');
         const submitBtnText = document.getElementById('submitBtnText');
         const cancelEditBtn = document.getElementById('cancelEditBtn');
         const formError = document.getElementById('formError');
@@ -353,7 +516,7 @@
             if (user) {
                 currentUser = user;
                 userName.textContent = user.displayName || (user.isAnonymous ? 'ゲスト生徒' : 'ユーザー');
-                userAvatar.src = user.photoURL || 'https://placehold.co/100x100/10b981/ffffff?text=User';
+                userAvatar.src = user.photoURL || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="%23059669"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="50" fill="white">👤</text></svg>';
                 
                 loginSection.classList.add('hidden');
                 userInfo.classList.remove('hidden');
@@ -371,31 +534,34 @@
             }
         });
 
-        // Google ログイン処理
+        // Google ログイン処理 (エラーハンドリング & 確実なガイド表示)
         loginBtn.addEventListener('click', async () => {
             loginError.classList.add('hidden');
             try {
                 await signInWithPopup(auth, provider);
             } catch (error) {
                 console.error("Login failed:", error);
-                const currentHost = window.location.hostname;
+                const currentHost = window.location.hostname || window.location.host;
                 
                 if (error.code === 'auth/unauthorized-domain') {
                     loginError.innerHTML = `
-                        <strong>承認済みドメインエラー (auth/unauthorized-domain):</strong><br>
-                        ドメイン（<code class="bg-red-100 px-1 rounded">${currentHost}</code>）が承認されていません。<br><br>
-                        <strong>解決方法:</strong><br>
-                        1. <a href="https://console.firebase.google.com/" target="_blank" class="underline font-bold">Firebase Console</a> にアクセス<br>
-                        2. <strong>Authentication</strong> ＞ <strong>設定 (Settings)</strong> ＞ <strong>承認済みドメイン</strong> を開く<br>
-                        3. 「ドメインを追加」で <code class="bg-red-100 font-bold px-1 rounded">${currentHost}</code> を登録してください。
+                        <strong>⚠️ 承認済みドメインエラー (auth/unauthorized-domain):</strong><br>
+                        現在のドメイン（<code class="bg-red-100 font-bold px-1 rounded">${currentHost}</code>）が Firebase で許可されていません。<br><br>
+                        <strong>【解決方法】</strong><br>
+                        1. <a href="https://console.firebase.google.com/" target="_blank" class="underline font-bold">Firebase Console</a> を開く<br>
+                        2. <strong>Authentication</strong> ＞ <strong>設定 (Settings)</strong> ＞ <strong>承認済みドメイン</strong> を選択<br>
+                        3. 「ドメインを追加」で <code class="bg-red-100 font-bold px-1 rounded">${currentHost}</code> を登録してください。<br><br>
+                        ※ 今すぐテストしたい場合は下の「ゲストログイン」をご利用ください。
                     `;
                 } else if (error.code === 'auth/configuration-not-found') {
                     loginError.innerHTML = `
-                        <strong>Google 認証未設定エラー:</strong><br>
-                        Firebase Console の Authentication ＞ Sign-in method で <strong>Google ログインプロバイダを有効化</strong> してください。
+                        <strong>⚠️ Google 認証未設定エラー:</strong><br>
+                        Firebase Console の Authentication ＞ Sign-in method で <strong>Google ログインを有効化</strong> してください。
                     `;
+                } else if (error.code === 'auth/popup-blocked') {
+                    loginError.innerHTML = `<strong>ポップアップがブロックされました:</strong> ブラウザのポップアップブロックを解除して再度お試しください。`;
                 } else {
-                    loginError.textContent = `ログインエラー: ${error.message}`;
+                    loginError.textContent = `ログインエラー: ${error.message} (${error.code})`;
                 }
                 loginError.classList.remove('hidden');
             }
@@ -497,7 +663,7 @@
             unit.value = 'kg';
             destination.value = '';
             memo.value = '';
-            formTitle.innerHTML = `<i class="fa-solid fa-plus-circle text-emerald-600"></i> <span>新規出荷登録</span>`;
+            formTitle.innerHTML = `<span>➕ 新規出荷登録</span>`;
             submitBtnText.textContent = '登録する';
             cancelEditBtn.classList.add('hidden');
             formError.classList.add('hidden');
@@ -543,11 +709,11 @@
                 shipmentList.innerHTML = `<p class="text-center text-gray-400 py-8 text-sm">出荷記録が見つかりません</p>`;
             } else {
                 shipmentList.innerHTML = filtered.map(item => `
-                    <div class="bg-gray-50 hover:bg-emerald-50/40 p-4 rounded-xl border border-gray-100 transition-all flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                    <div class="bg-gray-50 hover:bg-emerald-50 p-4 rounded-xl border border-gray-100 transition-all flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                         <div class="space-y-1">
                             <div class="flex items-center space-x-2">
                                 <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">${escapeHtml(item.itemName)}</span>
-                                <span class="text-xs text-gray-500"><i class="fa-regular fa-calendar"></i> ${escapeHtml(item.shipDate)}</span>
+                                <span class="text-xs text-gray-500">📅 ${escapeHtml(item.shipDate)}</span>
                                 <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded-md">${escapeHtml(item.destination)}</span>
                             </div>
                             <div class="text-lg font-bold text-gray-800">
@@ -556,11 +722,11 @@
                             ${item.memo ? `<p class="text-xs text-gray-600 bg-white p-2 rounded-lg border border-gray-100 mt-1">${escapeHtml(item.memo)}</p>` : ''}
                         </div>
                         <div class="flex items-center space-x-2 self-end sm:self-center">
-                            <button onclick="window.editShipment('${item.id}')" class="p-2 text-gray-500 hover:text-emerald-600 hover:bg-white rounded-lg transition-colors text-xs border border-gray-200 shadow-sm" title="編集">
-                                <i class="fa-solid fa-pen"></i>
+                            <button onclick="window.editShipment('${item.id}')" class="p-2 text-gray-600 hover:text-emerald-600 hover:bg-white rounded-lg transition-colors text-xs border border-gray-200 shadow-sm" title="編集">
+                                ✏️ 編集
                             </button>
-                            <button onclick="window.confirmDelete('${item.id}')" class="p-2 text-gray-500 hover:text-red-600 hover:bg-white rounded-lg transition-colors text-xs border border-gray-200 shadow-sm" title="削除">
-                                <i class="fa-solid fa-trash"></i>
+                            <button onclick="window.confirmDelete('${item.id}')" class="p-2 text-gray-600 hover:text-red-600 hover:bg-white rounded-lg transition-colors text-xs border border-gray-200 shadow-sm" title="削除">
+                                🗑️ 削除
                             </button>
                         </div>
                     </div>
@@ -569,7 +735,7 @@
 
             // 集計・グラフ描画
             renderSummary();
-            renderChart(filtered);
+            renderCustomCanvasChart(filtered);
         }
 
         // HTML エスケープ処理
@@ -606,10 +772,23 @@
             `).join('');
         }
 
-        // 出荷推移グラフ描画 (Chart.js)
-        function renderChart(data) {
-            const ctx = document.getElementById('shipmentChart').getContext('2d');
-            
+        // 完全自作軽量Canvasグラフィック描画（外部スクリプト通信完全排除）
+        function renderCustomCanvasChart(data) {
+            const canvas = document.getElementById('shipmentChartCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            // リサイズ対応
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio || 300;
+            canvas.height = rect.height * window.devicePixelRatio || 150;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+            const width = rect.width;
+            const height = rect.height;
+
+            ctx.clearRect(0, 0, width, height);
+
             const dateMap = {};
             [...data].sort((a,b) => new Date(a.shipDate) - new Date(b.shipDate)).forEach(s => {
                 if (!dateMap[s.shipDate]) {
@@ -621,42 +800,77 @@
             const labels = Object.keys(dateMap);
             const values = Object.values(dateMap);
 
-            if (chartInstance) {
-                chartInstance.destroy();
+            if (labels.length === 0) {
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('記録データがありません', width / 2, height / 2);
+                return;
             }
 
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: '出荷数量合計',
-                        data: values,
-                        borderColor: '#059669',
-                        backgroundColor: 'rgba(5, 150, 105, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.3,
-                        pointBackgroundColor: '#047857'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { font: { size: 10 } }
-                        },
-                        x: {
-                            ticks: { font: { size: 10 } }
-                        }
-                    }
-                }
+            const padding = { top: 20, right: 20, bottom: 30, left: 40 };
+            const graphWidth = width - padding.left - padding.right;
+            const graphHeight = height - padding.top - padding.bottom;
+
+            const maxVal = Math.max(...values, 10);
+
+            // グリッド背景線
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding.left, padding.top + graphHeight);
+            ctx.lineTo(padding.left + graphWidth, padding.top + graphHeight);
+            ctx.stroke();
+
+            const points = [];
+            labels.forEach((label, i) => {
+                const x = padding.left + (labels.length === 1 ? graphWidth / 2 : (i / (labels.length - 1)) * graphWidth);
+                const y = padding.top + graphHeight - (values[i] / maxVal) * graphHeight;
+                points.push({ x, y, value: values[i], label });
             });
+
+            // エリアグラデーション描画
+            if (points.length > 0) {
+                const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + graphHeight);
+                gradient.addColorStop(0, 'rgba(5, 150, 105, 0.3)');
+                gradient.addColorStop(1, 'rgba(5, 150, 105, 0.0)');
+
+                ctx.beginPath();
+                ctx.moveTo(points[0].x, padding.top + graphHeight);
+                points.forEach(p => ctx.lineTo(p.x, p.y));
+                ctx.lineTo(points[points.length - 1].x, padding.top + graphHeight);
+                ctx.closePath();
+                ctx.fillStyle = gradient;
+                ctx.fill();
+
+                // 折れ線描画
+                ctx.beginPath();
+                ctx.strokeStyle = '#059669';
+                ctx.lineWidth = 2.5;
+                points.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.stroke();
+
+                // 点とラベル描画
+                points.forEach((p) => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#047857';
+                    ctx.fill();
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+
+                    // 日付ラベル
+                    ctx.fillStyle = '#64748b';
+                    ctx.font = '10px sans-serif';
+                    ctx.textAlign = 'center';
+                    const shortLabel = p.label.slice(5); // MM-DD
+                    ctx.fillText(shortLabel, p.x, height - 10);
+                });
+            }
         }
 
         // 編集モード呼出し
@@ -672,7 +886,7 @@
             destination.value = item.destination;
             memo.value = item.memo || '';
 
-            formTitle.innerHTML = `<i class="fa-solid fa-pen-to-square text-emerald-600"></i> <span>出荷記録の編集</span>`;
+            formTitle.innerHTML = `<span>✏️ 出荷記録の編集</span>`;
             submitBtnText.textContent = '更新する';
             cancelEditBtn.classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -704,6 +918,7 @@
         // フィルタ・ソートのイベントリスナ
         filterCrop.addEventListener('change', renderUI);
         sortOrder.addEventListener('change', renderUI);
+        window.addEventListener('resize', () => renderCustomCanvasChart(shipments));
     </script>
 </body>
 </html>
