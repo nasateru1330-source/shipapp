@@ -325,6 +325,16 @@
                         Firebase Consoleの「Authentication」→「Sign-in method」で <strong>Google ログインプロバイダを有効化</strong> してください。<br>
                         ※下部の「ゲストとして試用ログイン」ボタンでテスト実行も可能です。
                     `;
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    const currentHost = window.location.hostname;
+                    loginError.innerHTML = `
+                        <strong>未承認ドメインエラー (auth/unauthorized-domain):</strong><br>
+                        現在ご利用のドメイン（<code class="bg-red-100 font-mono px-1 rounded">${currentHost}</code>）が Firebase で許可されていません。<br><br>
+                        <strong>解決方法:</strong><br>
+                        1. <a href="https://console.firebase.google.com/" target="_blank" class="underline font-bold">Firebase Console</a> を開く<br>
+                        2. <strong>Authentication</strong> ＞ <strong>設定 (Settings)</strong> ＞ <strong>承認済みドメイン</strong> を開く<br>
+                        3. 「ドメインを追加」をクリックし、<code class="bg-red-100 font-mono px-1 rounded">${currentHost}</code> を登録してください。
+                    `;
                 } else {
                     loginError.textContent = `ログインエラー: ${error.message}`;
                 }
@@ -333,16 +343,4 @@
         });
 
         // 匿名（ゲスト）ログインのフォールバック処理
-        anonLoginBtn.addEventListener('click', async () => {
-            loginError.classList.add('hidden');
-            try {
-                await signInAnonymously(auth);
-            } catch (error) {
-                console.error("Anonymous login failed:", error);
-                loginError.textContent = `ゲストログインエラー: ${error.message}`;
-                loginError.classList.remove('hidden');
-            }
-        });
-
-        // ログアウト
 <!-- ... existing code -->
